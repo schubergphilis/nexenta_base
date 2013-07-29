@@ -25,32 +25,32 @@ Attributes
 
 See the `attributes/default.rb` for suggested values. Some attributes are used based on the node's version.
 
-* `default["nexenta"]["nmv_log_rotate_default"]`        - Must be in format "XXm".
+* `default["nexenta"]["nmv_log_rotate_default"]`        - Must be in format "XXm".  
   Log rotation for nmv.log is not implemented in 3.x. The suggested value adds the same log rotation to nmv.log
   as the default for other log files which do have log rotation.
-* `default["nexenta"]["nms_reporter_default"]`          - Must be either "enable" or "disable".
+* `default["nexenta"]["nms_reporter_default"]`          - Must be either "enable" or "disable".  
   The NMS reporter aggregates information once a week and mails this. The aggregation proces can hang the NMS 
   for a few minutes, impeding monitoring. The suggested value disables the NMS reporter.
-* `default["nexenta"]["ses_check_flapping_default"]`    - Must be a value between 0 and 9.
+* `default["nexenta"]["ses_check_flapping_default"]`    - Must be a value between 0 and 9.  
   Only for NexentaStor 3.1.4 and higher. The ses-check runner occasionally gives false positives, for which
   this setting has been added. The suggested value ensures no false positives occur.
 
 Templates
 =========
 
-* `System.erb`          - Dynamically add /etc/system settings based on NexentaStor version. In effect after reboot.
-                        - Extra/changed settings from NexentaStor default:
-                            - `zfs:l2arc_write_boost`           - Ensure the L2ARC is populated fast after a failover.
-                            - `zfs:zfs_arc_shrink_shift`        - Adjusted to memory size. Not needed after 3.1.4.
+* `System.erb`          - Dynamically add /etc/system settings based on NexentaStor version. In effect after reboot.  
+    - Extra/changed settings from NexentaStor defaults:  
+        `zfs:l2arc_write_boost`           - Ensure the L2ARC is populated fast after a failover.  
+        `zfs:zfs_arc_shrink_shift`        - Adjusted to memory size. Not needed after 3.1.4.  
 * `Authorized_keys.erb` - Adds the partner key (if there is a ssh-bind) and any other key you specify.
 
 Usage
 =====
 
-* Install chef-client on your NexentaStor ZFS based storage system (after the initial setup has completed).
-* Configure the templates, attributes and files for your environment.
-* Create a role for NexentaStor systems which uses the cookbooks default recipe.
-* Add the newly created role to your NexentaStor systems.
+* Install chef-client on your NexentaStor ZFS based storage system (after the initial setup has completed).  
+* Configure the templates, attributes and files for your environment.  
+* Create a role for NexentaStor systems which uses the cookbooks default recipe.  
+* Add the newly created role to your NexentaStor systems.  
 
 License and Author
 ==================
