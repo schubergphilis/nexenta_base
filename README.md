@@ -1,7 +1,7 @@
 Description
 ===========
 
-Manages configuration settings of NexentaStor ZFS based storage systems
+Cookbook to manage configuration settings of NexentaStor ZFS based storage systems
 
 Requirements
 ============
