@@ -15,6 +15,7 @@ Platform
 
 Tested On:
 
+* NexentaStor 3.1.2
 * NexentaStor 3.1.3
 * NexentaStor 3.1.3.5
 * NexentaStor 3.1.4
