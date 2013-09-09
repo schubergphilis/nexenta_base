@@ -20,6 +20,11 @@ Tested On:
 * NexentaStor 3.1.3.5
 * NexentaStor 3.1.4
 * NexentaStor 3.1.4.1
+* NexentaStor 3.1.4.2
+
+With Chef clients:
+* 11.2.0
+* 11.6.0
 
 Attributes
 ==========
@@ -43,7 +48,10 @@ Templates
     - Extra/changed settings from NexentaStor defaults:  
         `zfs:l2arc_write_boost`           - Ensure the L2ARC is populated fast after a failover.  
         `zfs:zfs_arc_shrink_shift`        - Adjusted to memory size. Not needed after 3.1.4.  
-* `Authorized_keys.erb` - Adds the partner key (if there is a ssh-bind) and any other key you specify.
+* `Authorized_keys.erb` - Adds the partner key (if there is a ssh-bind) and any other keys you specify.
+* `Resolv.conf.erb`     - Dynamically adds the domain name and sets the domain name as first search domain.
+   Multiple search domains can be specified, space seperated, as long as the first search domain is the hosts
+   actual domain name. NexentaStor derives the hosts FQDN from the first search domain.
 
 Usage
 =====

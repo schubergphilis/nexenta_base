@@ -21,6 +21,7 @@
 # limitations under the License.
 #
 
-<%= @partner[:nexenta][:ssh_key] unless @partner[:nexenta].nil? || @partner[:nexenta][:ssh_key].nil? %>
-ssh-rsa AAAAB3NzaC1kc3MAAexamplekeyAAAAB3NzaC1kc3MAA== example key
-ssh-dss AAAAB3NzaC1kc3MAAexamplekeyAAAAB3NzaC1kc3MAA== example key
+domain <%= node[:nexenta][:domainname] %>
+search <%= node[:nexenta][:domainname] %> search2.domain.com
+nameserver 10.10.10.10
+nameserver 10.10.10.11

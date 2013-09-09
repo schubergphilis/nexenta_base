@@ -20,3 +20,5 @@ nexenta[:ssh_key] = File.open('/root/.ssh/id_rsa.pub').read.strip
 
 partner = `nmc -c "show network ssh-bindings" | grep root |cut -d '@' -f 2 |cut -d ' ' -f 1`.split("\n").join(",")
 nexenta[:partners] = "#{partner}" if ! partner.empty?
+
+nexenta[:domainname] = File.open('/etc/defaultdomain').read.strip

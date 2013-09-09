@@ -41,8 +41,13 @@ current = %x[cat /etc/release |grep "Open Storage Appliance" |cut -d "v" -f2].ch
 
 ## Ohai plugins
 
+if File.directory?("/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.18.0")
+  ohai_dir = "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.18.0"
+elsif File.directory?("/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0")
+  ohai_dir = "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0"
+end
 # add memory support for Solaris to Ohai
-cookbook_file "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0/lib/ohai/plugins/solaris2/memory.rb" do
+cookbook_file "#{ohai_dir}/lib/ohai/plugins/solaris2/memory.rb" do
   source "memory.rb"
   owner "snmp"
   group "staff"
@@ -50,7 +55,7 @@ cookbook_file "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0/lib/ohai/
 end
 
 # add specific Nexenta info to Ohai
-cookbook_file "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0/lib/ohai/plugins/solaris2/nexenta.rb" do
+cookbook_file "#{ohai_dir}/lib/ohai/plugins/solaris2/nexenta.rb" do
   source "nexenta.rb"
   owner "snmp"
   group "staff"
@@ -102,11 +107,13 @@ cookbook_file "/etc/nsswitch.conf" do
 end
 
 # add relevant dns search domains and name servers
-cookbook_file "/etc/resolv.conf" do
-  source "resolv.conf"
+template "/etc/resolv.conf" do
+  source "resolv.conf.erb"
   owner "root"
   group "sys"
   mode "0644"
+  variables :template_file => source.to_s
+  not_if { node[:nexenta].nil? || node[:nexenta][:domainname].nil? }
 end
 
 # define which drives can be multipathed
@@ -231,6 +238,7 @@ template "/etc/system" do
   mode "0755"
   variables(
     :version => current
+    :template_file => source.to_s
   )
 end
 
@@ -246,6 +254,7 @@ template "/root/.ssh/authorized_keys" do
     allnodes = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
     variables(
       :partner => Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{allnodes.select {|e| e =~ /#{hostname}/}.keys[0]}") || ""
+      :template_file => source.to_s
     )
   end
 end
