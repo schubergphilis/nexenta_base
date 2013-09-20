@@ -29,7 +29,8 @@ With Chef clients:
 Attributes
 ==========
 
-Edit `attributes/default.rb` to configure all settings. Some settings are used based on the node's version.
+Configure all settings by changing the attributes. Best practice would be to change these in Node and Environment
+attributes. Alternatively the `attributes/default.rb` can be changed directly. Some settings are used based on the node's version.
 Some extra information about the non-default settings:
 
 * `default["nexenta"]["nms"]["ses_check_flapping_default"]`     - Must be a value between 0 and 9.  
