@@ -20,6 +20,7 @@
 
 # Create a class to compare version numbers
 # Gem::Version could be used as well, but depends on ruby and chef version
+
 class Version < Array
   def initialize s
     super(s.split('.').map { |e| e.to_i })
@@ -46,20 +47,21 @@ if File.directory?("/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.18.0")
 elsif File.directory?("/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0")
   ohai_dir = "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/ohai-6.16.0"
 end
+
 # add memory support for Solaris to Ohai
 cookbook_file "#{ohai_dir}/lib/ohai/plugins/solaris2/memory.rb" do
   source "memory.rb"
-  owner "snmp"
+  owner "admin"
   group "staff"
-  mode "0644"
+  mode "0655"
 end
 
 # add specific Nexenta info to Ohai
 cookbook_file "#{ohai_dir}/lib/ohai/plugins/solaris2/nexenta.rb" do
   source "nexenta.rb"
-  owner "snmp"
+  owner "admin"
   group "staff"
-  mode "0644"
+  mode "0655"
 end
 
 
@@ -90,11 +92,6 @@ perl "load_nfs_config" do
   action :nothing
 end
 
-execute "restart_nms" do
-  command "nmc -c \"setup appliance nms restart -y \" "
-  action :nothing
-end
-
 
 ## Generic settings
 
@@ -113,7 +110,6 @@ template "/etc/resolv.conf" do
   group "sys"
   mode "0644"
   variables :template_file => source.to_s
-  not_if { node[:nexenta].nil? || node[:nexenta][:domainname].nil? }
 end
 
 # define which drives can be multipathed
@@ -125,38 +121,42 @@ cookbook_file "/kernel/drv/scsi_vhci.conf" do
 end
 
 # define loghosts and levels
-cookbook_file "/etc/syslog.conf" do
-  source "syslog.conf"
+template "/etc/syslog.conf" do
+  source "syslog.conf.erb"
   owner "root"
   group "sys"
   mode "0644"
+  variables :template_file => source.to_s
   notifies :run, "execute[restart_syslog]"
 end
 
 # set time server. This setting will get lost after nms restart (and then set again by chef). Should be fixed in Nexentastor 4.0.
-cookbook_file "/etc/inet/ntp.conf" do
-  source "ntp.conf"
+template "/etc/inet/ntp.conf" do
+  source "ntp.conf.erb"
   owner "root"
   group "sys"
   mode "0644"
+  variables :template_file => source.to_s
   notifies :run, "execute[restart_ntp]"
 end
 
 # configure snmp for monitoring. This setting will get lost after nms restart (and then set again by chef). Should be fixed in Nexentastor 4.0.
-cookbook_file "/etc/snmp/snmpd.conf" do
-  source "snmpd.conf"
+template "/etc/snmp/snmpd.conf" do
+  source "snmpd.conf.erb"
   owner "root"
   group "root"
   mode "0644"
+  variables :template_file => source.to_s
   notifies :run, "execute[restart_snmp]"
 end
 
 # set nfs settings
-cookbook_file "/etc/default/nfs" do
-  source "nfs"
+template "/etc/default/nfs" do
+  source "nfs.erb"
   owner "root"
   group "root"
   mode "0444"
+  variables :template_file => source.to_s
   notifies :run, "perl[load_nfs_config]"
 end
 
@@ -166,57 +166,57 @@ end
 # add log rotation for nmv.log
 ruby_block "create_nmv_log_attribute" do
   block do
-    node.set[:nexenta][:nmv_log_rotate_current] = "0"
+    node.set[:nexenta][:logadm][:nmv_log_rotate_current] = "0"
     node.save
   end
-  not_if { node[:nexenta].nil? || node[:nexenta].attribute?("nmv_log_rotate_current") }
+  not_if { node[:nexenta][:logadm].attribute?("nmv_log_rotate_current") }
 end
 
 ruby_block "nmv_log_rotate" do
   block do
     file = Chef::Util::FileEdit.new("/etc/logadm.conf")
-    file.insert_line_if_no_match("/var/log/nmv.log", "/var/log/nmv.log -C 2 -s #{node.default[:nexenta][:nmv_log_rotate_default]}")
+    file.insert_line_if_no_match("/var/log/nmv.log", "/var/log/nmv.log -C 2 -s #{node.default[:nexenta][:logadm][:nmv_log_rotate_default]}")
     file.write_file
-    node.set[:nexenta][:nmv_log_rotate_current] = node.default[:nexenta][:nmv_log_rotate_default]
+    node.set[:nexenta][:logadm][:nmv_log_rotate_current] = node.default[:nexenta][:logadm][:nmv_log_rotate_default]
   end
-  not_if { node[:nexenta].nil? || node[:nexenta][:nmv_log_rotate_current].nil? ||\
-           node[:nexenta][:nmv_log_rotate_current] == node.default[:nexenta][:nmv_log_rotate_default] }
+  not_if { node[:nexenta][:logadm][:nmv_log_rotate_current].nil? ||\
+           node[:nexenta][:logadm][:nmv_log_rotate_current] == node.default[:nexenta][:logadm][:nmv_log_rotate_default] }
 end
 
 # enable/disable reporters. since these sometimes 'hang' the nms for a few minutes, messing with monitoring.
 ruby_block "create_reporter_attribute" do
   block do
-    node.set[:nexenta][:nms_reporter_current] = "enable"
+    node.set[:nexenta][:nms][:nms_reporter_current] = "enable"
     node.save
   end
-  not_if { node[:nexenta].nil? || node[:nexenta].attribute?("nms_reporter_current") }
+  not_if { node[:nexenta][:nms].attribute?("nms_reporter_current") }
 end
 
 ruby_block "change_nms_reporter" do
   block do
-    system "nmc -c \"setup reporter #{node.default[:nexenta][:nms_reporter_default]}\" "
-    node.set[:nexenta][:nms_reporter_current] = node.default[:nexenta][:nms_reporter_default]
+    system "nmc -c \"setup reporter #{node.default[:nexenta][:nms][:nms_reporter_default]}\" "
+    node.set[:nexenta][:nms][:nms_reporter_current] = node.default[:nexenta][:nms][:nms_reporter_default]
   end
-  not_if { node[:nexenta].nil? || node[:nexenta][:nms_reporter_current].nil? ||\
-           node[:nexenta][:nms_reporter_current] == node.default[:nexenta][:nms_reporter_default] }
+  not_if { node[:nexenta][:nms][:nms_reporter_current].nil? ||\
+           node[:nexenta][:nms][:nms_reporter_current] == node.default[:nexenta][:nms][:nms_reporter_default] }
 end
 
 # set ses-check anti_flapping. Default setting of 0 is trigger happy, causing false positives. Only available in NexentaStor 3.1.4 and higher.
 ruby_block "create_ses_check_attribute" do
   block do
-    node.set[:nexenta][:ses_check_flapping_current] = "0"
+    node.set[:nexenta][:nms][:ses_check_flapping_current] = "0"
     node.save
   end
-  not_if { Version.new(current) < Version.new('3.1.4') || node[:nexenta].nil? || node[:nexenta].attribute?("ses_check_flapping_current") }
+  not_if { Version.new(current) < Version.new('3.1.4') || node[:nexenta][:nms].attribute?("ses_check_flapping_current") }
 end
 
 ruby_block "ses_check_flapping" do
   block do
-    system "nmc -c \"setup trigger ses-check property ival_anti_flapping -p #{node.default[:nexenta][:ses_check_flapping_default]} -y\" "
-    node.set[:nexenta][:ses_check_flapping_current] = node.default[:nexenta][:ses_check_flapping_default]
+    system "nmc -c \"setup trigger ses-check property ival_anti_flapping -p #{node.default[:nexenta][:nms][:ses_check_flapping_default]} -y\" "
+    node.set[:nexenta][:nms][:ses_check_flapping_current] = node.default[:nexenta][:nms][:ses_check_flapping_default]
   end
-  not_if { Version.new(current) < Version.new('3.1.4') || node[:nexenta].nil? || node[:nexenta][:ses_check_flapping_current].nil? ||\
-           node[:nexenta][:ses_check_flapping_current] == node.default[:nexenta][:ses_check_flapping_default] }
+  not_if { Version.new(current) < Version.new('3.1.4') || node[:nexenta][:nms][:ses_check_flapping_current].nil? ||\
+           node[:nexenta][:nms][:ses_check_flapping_current] == node.default[:nexenta][:nms][:ses_check_flapping_default] }
 end
 
 # enable nfs
@@ -238,7 +238,6 @@ template "/etc/system" do
   mode "0755"
   variables(
     :version => current
-    :template_file => source.to_s
   )
 end
 
@@ -249,12 +248,12 @@ template "/root/.ssh/authorized_keys" do
   owner "root"
   group "root"
   mode "0600"
-  if node.attribute?("nexenta") && node[:nexenta].attribute?("partners")
+  if node[:nexenta].attribute?("partners")
     hostname = node[:nexenta][:partners].split(".")[0]
     allnodes = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes")
     variables(
       :partner => Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("nodes/#{allnodes.select {|e| e =~ /#{hostname}/}.keys[0]}") || ""
-      :template_file => source.to_s
     )
   end
 end
+

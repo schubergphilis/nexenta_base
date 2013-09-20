@@ -4,7 +4,7 @@
 # Do not edit or change this file but change the following:
 #
 # Cookbook Name:: nexenta_base
-# Template:: authorized_keys
+# Template:: <%= @template_file %>
 #
 # Copyright 2013, Schuberg Philis
 #
@@ -21,7 +21,20 @@
 # limitations under the License.
 #
 
-<%= @partner[:nexenta][:ssh_key] unless @partner.nil? || @partner[:nexenta].nil? || @partner[:nexenta][:ssh_key].nil? %>
-<% for key in node[:nexenta][:authorized_keys].keys do -%>
-<%= node[:nexenta][:authorized_keys][key] %>
-<% end -%>
+##############################################################################
+#
+# EXAMPLE.conf:
+#   An example configuration file for configuring the Net-SNMP agent ('snmpd')
+#   See the 'snmpd.conf(5)' man page for details
+#
+###############################################################################
+
+rocommunity <%= node[:nexenta][:snmp][:rocommunity] %>
+
+sysDescr                <%= node[:nexenta][:snmp][:sysDescr] %>
+sysLocation             <%= node[:nexenta][:snmp][:sysLocation] %>
+sysContact              <%= node[:nexenta][:snmp][:sysContact] %>
+trapsink                <%= node[:nexenta][:snmp][:trapsink] %>
+linkUpDownNotifications <%= node[:nexenta][:snmp][:linkUpDownNotifications] %>
+master                  <%= node[:nexenta][:snmp][:master] %>
+

@@ -22,6 +22,7 @@
 #
 
 domain <%= node[:nexenta][:domainname] %>
-search <%= node[:nexenta][:domainname] %> search2.domain.com
-nameserver 10.10.10.10
-nameserver 10.10.10.11
+search <%= node[:nexenta][:domainname] %> <%= node[:nexenta][:resolv][:search] %>
+<% for nameserver in node[:nexenta][:resolv][:nameservers] do -%>
+nameserver <%= nameserver %>
+<% end -%>

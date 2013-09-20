@@ -1,7 +1,7 @@
 Description
 ===========
 
-Cookbook to manage configuration settings of NexentaStor ZFS based storage systems
+Cookbook to manage configuration settings of NexentaStor ZFS based storage systems.
 
 Requirements
 ============
@@ -29,37 +29,58 @@ With Chef clients:
 Attributes
 ==========
 
-See the `attributes/default.rb` for suggested values. Some attributes are used based on the node's version.
+Edit `attributes/default.rb` to configure all settings. Some settings are used based on the node's version.
+Some extra information about the non-default settings:
 
-* `default["nexenta"]["nmv_log_rotate_default"]`        - Must be in format "XXm".  
-  Log rotation for nmv.log is not implemented in 3.x. The suggested value adds the same log rotation to nmv.log
-  as the default for other log files which do have log rotation.
-* `default["nexenta"]["nms_reporter_default"]`          - Must be either "enable" or "disable".  
-  The NMS reporter aggregates information once a week and mails this. The aggregation proces can hang the NMS 
-  for a few minutes, impeding monitoring. The suggested value disables the NMS reporter.
-* `default["nexenta"]["ses_check_flapping_default"]`    - Must be a value between 0 and 9.  
+* `default["nexenta"]["nms"]["ses_check_flapping_default"]`     - Must be a value between 0 and 9.  
   Only for NexentaStor 3.1.4 and higher. The ses-check runner occasionally gives false positives, for which
   this setting has been added. The suggested value ensures no false positives occur.
+* `default["nexenta"]["nms"]["nms_reporter_default"]`           - Must be either "enable" or "disable".  
+  The NMS reporter aggregates information once a week and mails this. The aggregation process can hang the NMS 
+  for a few minutes, impeding monitoring. The suggested value disables the NMS reporter.
+
+* `default["nexenta"]["logadm"]["nmv_log_rotate_default"]`      - Must be in format "XXm".  
+  Log rotation for nmv.log is not implemented in 3.x. The suggested value adds the same log rotation to nmv.log
+  as the default for other log files which do have log rotation.
+
+* `default["nexenta"]["nfs"]["nfs_server_versmax"]`             - Set the max NFS server version
+  For some workloads/applications it is not recommended to use NFSv4 (VMware, Xen) or for some
+  applications enabling NFSv4 does not work at all (Cloudstack).
+* `default["nexenta"]["nfs"]["nfs_client_versmax"]`             - Set the max NFS client version
+  For some workloads/applications it is not recommended to use NFSv4 (VMware, Xen) or for some
+  applications enabling NFSv4 does not work at all (Cloudstack).
+
+* `default["nexenta"]["system"]["swapfs_minfree"]`              - Number of 4kb pages.
+  This sets the minimum amount of memory which will always be available for the system (not used by ARC).
+  Default is 1/8th of total memory, which is way to much in a high memory system. The suggested value
+  results in 4GB of memory which will not be used by ARC.
+* `default["nexenta"]["system"]["l2arc_write_boost"]`           - Max bytes/s to fill the L2ARC.
+  Only used when the ARC itself is not full. Ensures the L2ARC is populated fast after a failover or reboot.
+* `default["nexenta"]["system"]["nfs3_max_transfer_size"]`      - Tuned to benefit a 10GB environment with VM's.
+* `default["nexenta"]["system"]["nfs3_max_transfer_size_cots"]` - Tuned to benefit a 10GB environment with VM's.
+
+* `default["nexenta"]["authorized_keys"]["joe"]`                - Joe's public SSH key for easy/secure logon.
+  Add a extra attribute and key for each user.
 
 Templates
 =========
 
-* `System.erb`          - Dynamically add /etc/system settings based on NexentaStor version. In effect after reboot.  
-    - Extra/changed settings from NexentaStor defaults:  
-        `zfs:l2arc_write_boost`           - Ensure the L2ARC is populated fast after a failover.  
-        `zfs:zfs_arc_shrink_shift`        - Adjusted to memory size. Not needed after 3.1.4.  
-* `Authorized_keys.erb` - Adds the partner key (if there is a ssh-bind) and any other keys you specify.
-* `Resolv.conf.erb`     - Dynamically adds the domain name and sets the domain name as first search domain.
-   Multiple search domains can be specified, space seperated, as long as the first search domain is the hosts
-   actual domain name. NexentaStor derives the hosts FQDN from the first search domain.
+* `System.erb`          - Dynamically adds /etc/system settings based on NexentaStor version and settings
+                          set in the attributes file. In effect after reboot.  
+* `Authorized_keys.erb` - Adds the node's partner key (if there is a ssh-bind) and any other keys specified
+                          in the attributes file.
+* `Resolv.conf.erb`     - Dynamically adds the domain name and sets the domain name as first search domain
+                          since NexentaStor derives the hosts FQDN from the first search domain.
+                          Search domains specified in the attributes file are added after the domain name.
 
 Usage
 =====
 
 * Install chef-client on your NexentaStor ZFS based storage system (after the initial setup has completed).  
-* Configure the templates, attributes and files for your environment.  
+* Configure the attributes file (and any environment attributes if necessary/used) for your environment.
 * Create a role for NexentaStor systems which uses the cookbooks default recipe.  
 * Add the newly created role to your NexentaStor systems.  
+* After the first two chef-client runs all settings will have been set.
 
 License and Author
 ==================
