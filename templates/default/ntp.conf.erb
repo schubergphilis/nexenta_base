@@ -26,4 +26,6 @@
 #
 driftfile /etc/inet/ntp.drift
 
-server <%= node[:nexenta][:ntp][:timeserver] %>
+<% for timeserver in node[:nexenta][:ntp][:timeservers] do -%>
+server <%= timeserver %>
+<% end -%>

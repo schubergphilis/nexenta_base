@@ -36,7 +36,7 @@ default["nexenta"]["nfs"]["nfs_server_versmax"]             = "3" # Default = 4
 default["nexenta"]["nfs"]["nfs_client_versmax"]             = "3" # Default = 4
 
 # /etc/inet/ntp.conf                                        # NTP server.
-default["nexenta"]["ntp"]["timeserver"]                     = "ntp.pool.org"
+default["nexenta"]["ntp"]["timeservers"]                     = ["0.pool.ntp.org", "1.pool.ntp.org"]
 
 # /etc/snmp/snmpd.conf                                      # SNMP settings.
 default["nexenta"]["snmp"]["rocommunity"]                   = "public"
