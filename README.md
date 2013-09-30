@@ -44,12 +44,15 @@ Some extra information about the non-default settings:
   Log rotation for nmv.log is not implemented in 3.x. The suggested value adds the same log rotation to nmv.log
   as the default for other log files which do have log rotation.
 
-* `default["nexenta"]["nfs"]["nfs_server_versmax"]`             - Set the max NFS server version
+* `default["nexenta"]["nfs"]["nfs_server_versmax"]`             - Set the max NFS server version.
   For some workloads/applications it is not recommended to use NFSv4 (VMware, Xen) or for some
   applications enabling NFSv4 does not work at all (Cloudstack).
-* `default["nexenta"]["nfs"]["nfs_client_versmax"]`             - Set the max NFS client version
+* `default["nexenta"]["nfs"]["nfs_client_versmax"]`             - Set the max NFS client version.
   For some workloads/applications it is not recommended to use NFSv4 (VMware, Xen) or for some
   applications enabling NFSv4 does not work at all (Cloudstack).
+
+* `default["nexenta"]["snmp"]["extends"]`                       - Add SNMP extends if needed.
+  SNMP extend scripts can be added in format ["custom_cpu /etc/custom_cpu.sh", "custom_mem /etc/custom_mem.sh"].
 
 * `default["nexenta"]["system"]["swapfs_minfree"]`              - Number of 4kb pages.
   This sets the minimum amount of memory which will always be available for the system (not used by ARC).

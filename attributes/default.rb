@@ -46,6 +46,7 @@ default["nexenta"]["snmp"]["sysContact"]                    = "youremail@yourcom
 default["nexenta"]["snmp"]["trapsink"]                      = "localhost"
 default["nexenta"]["snmp"]["linkUpDownNotifications"]       = "yes"
 default["nexenta"]["snmp"]["master"]                        = "agentx"
+default["nexenta"]["snmp"]["extends"]                       = [] # SNMP extend scripts can be added, comma delimited,  in format: "custom_cpu /etc/custom_cpu.sh"
 
 # /etc/syslog.conf                                          # Loghosts.
 default["nexenta"]["syslog"]["loghosts"]                    =["loghost1", "loghost2"] # Any number of hosts can be configured.

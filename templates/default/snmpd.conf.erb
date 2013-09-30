@@ -29,12 +29,15 @@
 #
 ###############################################################################
 
-rocommunity <%= node[:nexenta][:snmp][:rocommunity] %>
+rocommunity		<%= node[:nexenta][:snmp][:rocommunity] %>
 
-sysDescr                <%= node[:nexenta][:snmp][:sysDescr] %>
-sysLocation             <%= node[:nexenta][:snmp][:sysLocation] %>
-sysContact              <%= node[:nexenta][:snmp][:sysContact] %>
-trapsink                <%= node[:nexenta][:snmp][:trapsink] %>
-linkUpDownNotifications <%= node[:nexenta][:snmp][:linkUpDownNotifications] %>
-master                  <%= node[:nexenta][:snmp][:master] %>
+sysDescr		<%= node[:nexenta][:snmp][:sysDescr] %>
+sysLocation		<%= node[:nexenta][:snmp][:sysLocation] %>
+sysContact		<%= node[:nexenta][:snmp][:sysContact] %>
+trapsink		<%= node[:nexenta][:snmp][:trapsink] %>
+linkUpDownNotifications	<%= node[:nexenta][:snmp][:linkUpDownNotifications] %>
+master			<%= node[:nexenta][:snmp][:master] %>
 
+<% for extend in node[:nexenta][:snmp][:extends] do -%>
+exec			<%= extend %>
+<% end -%>
