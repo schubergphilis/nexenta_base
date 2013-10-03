@@ -69,8 +69,8 @@ set mpt_sas:mptsas_timeout_threshold = 2
 set zfs:zio_min_timeout_ms = 5000
 set zfs:zio_max_timeout_ms = 30000
 set sd:sd_io_time = 10
-<% elsif @version == "3.1.4.2" -%>
-# Set if version is 3.1.4.2
+<% elsif @version == "3.1.4.2"|| @version == "3.1.5"  -%>
+# Set if version is 3.1.4.2 or 3.1.5
 # Defaults
 set nfs:nfs3_bsize = 131072
 set nfs:nfs4_bsize = 131072
