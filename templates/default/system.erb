@@ -28,10 +28,9 @@ set zfs:zfs_txg_synctime_ms = <%= node[:nexenta][:system][:zfs_txg_synctime_ms] 
 set zfs:zfs_txg_timeout = <%= node[:nexenta][:system][:zfs_txg_timeout] %>
 
 # Non-Defaults
-<%= "set swapfs_minfree = #{node[:nexenta][:system][:swapfs_minfree]}" unless node[:nexenta][:system][:swapfs_minfree].nil? %>
-<%= "set zfs:l2arc_write_boost = #{node[:nexenta][:system][:l2arc_write_boost]}" unless node[:nexenta][:system][:l2arc_write_boost].nil? %>
-<%= "set nfs:nfs3_max_transfer_size = #{node[:nexenta][:system][:nfs3_max_transfer_size]}" unless node[:nexenta][:system][:nfs3_max_transfer_size].nil? %>
-<%= "set nfs:nfs3_max_transfer_size_cots = #{node[:nexenta][:system][:nfs3_max_transfer_size_cots]}" unless node[:nexenta][:system][:nfs3_max_transfer_size_cots].nil? %>
+<% for setting, value in node[:nexenta][:system][:extra].each_pair do -%>
+<%= "set #{setting} = #{value}" %>
+<% end -%>
 
 <% if @version == "3.1.3" || @version == "3.1.3.5" -%>
 # Set if version is 3.1.3 or 3.1.3.5

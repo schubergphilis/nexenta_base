@@ -54,14 +54,14 @@ Some extra information about the non-default settings:
 * `default["nexenta"]["snmp"]["extends"]`                       - Add SNMP extends if needed.
   SNMP extend scripts can be added in format ["custom_cpu /etc/custom_cpu.sh", "custom_mem /etc/custom_mem.sh"].
 
-* `default["nexenta"]["system"]["swapfs_minfree"]`              - Number of 4kb pages.
+* `default["nexenta"]["system"]["extra"]`                       - Any key/value pair can be added.
+  These will then be added to /etc/system in the #Non-Defaults section. The below are suggestions/examples.
+* `default["nexenta"]["system"]["extra"]["swapfs_minfree"]`     - Number of 4kb pages.
   This sets the minimum amount of memory which will always be available for the system (not used by ARC).
   Default is 1/8th of total memory, which is way to much in a high memory system. The suggested value
   results in 4GB of memory which will not be used by ARC.
-* `default["nexenta"]["system"]["l2arc_write_boost"]`           - Max bytes/s to fill the L2ARC.
+* `default["nexenta"]["system"]["extra"]["l2arc_write_boost"]`  - Max bytes/s to fill the L2ARC.
   Only used when the ARC itself is not full. Ensures the L2ARC is populated fast after a failover or reboot.
-* `default["nexenta"]["system"]["nfs3_max_transfer_size"]`      - Tuned to benefit a 10GB environment with VM's.
-* `default["nexenta"]["system"]["nfs3_max_transfer_size_cots"]` - Tuned to benefit a 10GB environment with VM's.
 
 * `default["nexenta"]["authorized_keys"]["joe"]`                - Joe's public SSH key for easy/secure logon.
   Add a extra attribute and key for each user.

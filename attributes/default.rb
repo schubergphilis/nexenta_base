@@ -59,10 +59,9 @@ default["nexenta"]["resolv"]["nameservers"]                 = ["10.2.3.4", "10.2
 default["nexenta"]["system"]["zfs_resilver_delay"]          = "2" # Default
 default["nexenta"]["system"]["zfs_txg_synctime_ms"]         = "5000" #Default
 default["nexenta"]["system"]["zfs_txg_timeout"]             = "10" # Default
-default["nexenta"]["system"]["swapfs_minfree"]              = "1048576" # Non-Default. ARC keeps 4GB of memory free for the system. Leave empty to use defaults.
-default["nexenta"]["system"]["l2arc_write_boost"]           = "83886080" # Non-Default. If ARC is not full writing to L2ARC will go faster. Leave empty to use defaults.
-default["nexenta"]["system"]["nfs3_max_transfer_size"]      = "131072" # Non-Default. Changed to benefit our 10GB hypervisor environment. Leave empty to use defaults.
-default["nexenta"]["system"]["nfs3_max_transfer_size_cots"] = "131072" # Non-Default. Changed to benefit our 10GB hypervisor environment. Leave empty to use defaults.
+# Extra ZFS tunables. Add any tunable you want to set.
+default["nexenta"]["system"]["extra"]["swapfs_minfree"]     = "1048576" # Non-Default. ARC keeps 4GB of memory free for the system. Leave empty to use defaults.
+default["nexenta"]["system"]["extra"]["zfs:l2arc_write_boost"] = "83886080" # Non-Default. If ARC is not full writing to L2ARC will go faster. Leave empty to use defaults.
 
 # /root/.ssh/authorized_keys                                # Public SSH keys. Partner key is also added. Any number of attributes with a SSH key can be added.
 default["nexenta"]["authorized_keys"]["joe"]                = "ssh-dss AAAAB3Nza....examplekey......YAl1GZ+g== joe"
