@@ -21,6 +21,9 @@ Tested On:
 * NexentaStor 3.1.4
 * NexentaStor 3.1.4.1
 * NexentaStor 3.1.4.2
+* NexentaStor 3.1.5
+* NexentaStor 3.1.5.1
+* NexentaStor 3.1.6
 
 With Chef clients:
 * 11.2.0
